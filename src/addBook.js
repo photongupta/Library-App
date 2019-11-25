@@ -8,6 +8,10 @@ const isPasswordCorrect = function(passward) {
   return passward == dechiperText;
 };
 
+const isAutherPresent = function(autherName, bookList) {
+  return !bookList.hasOwnProperty(autherName);
+};
+
 const addBookToTheLibrary = function(oldBookList, optionsAndArgs) {
   let bookList = {};
   bookList = Object.assign(bookList, oldBookList);
@@ -15,7 +19,7 @@ const addBookToTheLibrary = function(oldBookList, optionsAndArgs) {
   let autherName = optionsAndArgs[3];
   let passWord = optionsAndArgs[5];
   if (isPasswordCorrect(passWord)) {
-    if (!bookList.hasOwnProperty(autherName)) {
+    if (isAutherPresent(autherName, bookList)) {
       bookList[autherName] = [];
     }
     bookList[autherName].push(bookName);
@@ -27,7 +31,7 @@ const addBook = function(optionsAndArgs) {
   let oldBookListInString = fs.readFileSync("./bookList.json", "utf8");
   oldBookList = JSON.parse(oldBookListInString);
   let newBookList = addBookToTheLibrary(oldBookList, optionsAndArgs);
-  let newBookListInString = JSON.stringify(newBookList);
+  let newBookListInString = JSON.stringify(newBookList, null, 2);
   if (newBookListInString != oldBookListInString) {
     fs.writeFileSync("./bookList.json", newBookListInString, "utf8");
     return displayMsg(true);
