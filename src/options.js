@@ -1,43 +1,28 @@
 const bookStoreLib = require("./bookStore.js");
 const addBookLib = require("./addBook.js");
 const adminLib = require("./admin.js");
-
-// const parseOptionArgs = function(optionsAndArgs) {
-//   let options = {
-//     "-search": {},
-//     "-borrow": "soch k btayenge",
-//     "-add": {}
-//   };
-//   options["-search"]["-a"] = bookStoreLib.parseBookListByAuthor;
-//   options["-search"]["-l"] = bookStoreLib.getAllBooks;
-//   let option1 = optionsAndArgs[0];
-//   let option2 = optionsAndArgs[1];
-//   let arg = optionsAndArgs.slice(2);
-//   return options[option1][option2](arg);
-// };
+const borrowBookLib = require("./borrowBook.js");
+const submitBookLib = require("./submitBook.js");
 
 const parseOptionArgs = function(optionsAndArgs) {
-  let option = optionsAndArgs[0];
+  let option = optionsAndArgs[2];
   let options = {
-    "-search": parseSearchBook,
-    "-borrow": "borrowBook",
-    "-submit": "submitBook",
-    "-admin": adminLib.setAdminPassward,
-    "-add": addBookLib.addBook
+    "--search": bookStoreLib.parseSearchBook,
+    "--borrow": borrowBookLib.borrowGivenBook,
+    "--submit": submitBookLib.submitGivenBook,
+    "--admin": adminLib.setAdminPassward,
+    "--add": addBookLib.addBookToTheLibrary
   };
-  let arg = optionsAndArgs.slice(1);
-  return options[option](arg);
+  let args = parseUserOptions(optionsAndArgs.slice(3));
+  return { cmdRef: options[option], args: args };
 };
 
-const parseSearchBook = function(optionAndArgs) {
-  let option = optionAndArgs[0];
-  let options = {
-    "-a": bookStoreLib.parseBookListByAuthor,
-    "-l": bookStoreLib.getAllBooks
-  };
-  let arg = optionAndArgs.slice(1);
-  return options[option](arg);
+const parseUserOptions = function(userOptions) {
+  const args = {};
+  for (let index = 0; index < userOptions.length; index = index + 2) {
+    args[userOptions[index].slice(2)] = userOptions[index + 1];
+  }
+  return args;
 };
 
 exports.parseOptionArgs = parseOptionArgs;
-exports.parseSearchBook = parseSearchBook;

@@ -1,49 +1,78 @@
-const fs = require("fs");
 const SimpleCrypto = require("simple-crypto-js").default;
+const utils = require("./utilities");
 
-const isPasswordCorrect = function(passward) {
+const isPasswordCorrect = function(args, fileOperationTools) {
   let crypto = new SimpleCrypto("rashmi123");
-  let chiperText = fs.readFileSync("./admin.json", "utf8");
+  let chiperText = utils.read(
+    fileOperationTools,
+    fileOperationTools.pathsAndEncoding.pathOfPassward
+  );
   let dechiperText = crypto.decrypt(chiperText);
-  return passward == dechiperText;
+  return args.passward == dechiperText;
 };
 
-const isAutherPresent = function(autherName, bookList) {
-  return !bookList.hasOwnProperty(autherName);
+const getBookId = function(bookList) {
+  let lastId = Math.max(...Object.keys(bookList));
+  return lastId == -Infinity ? 1 : lastId + 1;
 };
 
-const addBookToTheLibrary = function(oldBookList, optionsAndArgs) {
-  let bookList = {};
-  bookList = Object.assign(bookList, oldBookList);
-  let bookName = optionsAndArgs[1];
-  let autherName = optionsAndArgs[3];
-  let passWord = optionsAndArgs[5];
-  if (isPasswordCorrect(passWord)) {
-    if (isAutherPresent(autherName, bookList)) {
-      bookList[autherName] = [];
-    }
-    bookList[autherName].push(bookName);
+const isSameBookExist = function(args) {
+  return function(bookDetail) {
+    return (
+      bookDetail.authorName == args.author && bookDetail.bookName == args.book
+    );
+  };
+};
+
+const getTotalCountOfSameBooks = function(args, allBookList) {
+  let count = 1;
+  count =
+    count + Object.values(allBookList).filter(isSameBookExist(args)).length;
+  return count;
+};
+
+const addBookToTheLibrary = function(args, allBooksDetail, fileOperationTools) {
+  if (isPasswordCorrect(args, fileOperationTools)) {
+    let bookStatus = addBook(args, allBooksDetail, fileOperationTools);
+    return bookStatus;
   }
-  return bookList;
+  return errorMessage();
 };
 
-const addBook = function(optionsAndArgs) {
-  let oldBookListInString = fs.readFileSync("./bookList.json", "utf8");
-  oldBookList = JSON.parse(oldBookListInString);
-  let newBookList = addBookToTheLibrary(oldBookList, optionsAndArgs);
-  let newBookListInString = JSON.stringify(newBookList, null, 2);
-  if (newBookListInString != oldBookListInString) {
-    fs.writeFileSync("./bookList.json", newBookListInString, "utf8");
-    return displayMsg(true);
-  }
-  return displayMsg(false);
+const addBook = function(args, allBooksDetail, fileOperationTools) {
+  let bookDetail = {
+    bookName: args.book,
+    authorName: args.author,
+    IssueStatus: false
+  };
+  let totalNoOfBooks = getTotalCountOfSameBooks(
+    args,
+    allBooksDetail.allBooksList
+  );
+  let extraDetailOfBook = {
+    totoalPages: args.pages,
+    cost: args.cost,
+    totalNoOfBooks: totalNoOfBooks,
+    availableBooks: totalNoOfBooks
+  };
+  let bookId = getBookId(allBooksDetail.allBooksList);
+  allBooksDetail.allBooksList[bookId] = bookDetail;
+  allBooksDetail.booksDetail[args.book] = extraDetailOfBook;
+  utils.write(
+    fileOperationTools,
+    allBooksDetail.booksDetail,
+    fileOperationTools.pathsAndEncoding.pathOfBooksDetail
+  );
+  utils.write(
+    fileOperationTools,
+    allBooksDetail.allBooksList,
+    fileOperationTools.pathsAndEncoding.pathOfBookList
+  );
+  return "book is Added successFuly";
 };
 
-const displayMsg = function(isBookAdded) {
-  if (isBookAdded) {
-    return "book is added succesfully";
-  }
+const errorMessage = function() {
   return "oooppss......!!!!!!   \npassWard is wrong ....\nplease enter correct passward in order to add the book in library.";
 };
 
-exports.addBook = addBook;
+exports.addBookToTheLibrary = addBookToTheLibrary;

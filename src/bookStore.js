@@ -1,34 +1,32 @@
-const fs = require("fs");
+const parseSearchBook = function(args, allBooksDetail) {
+  let options = {
+    author: getBookListOfAuthor,
+    list: getAllBooks
+  };
+  return options[Object.keys(args)[0]](allBooksDetail, args);
+};
 
-const getAllBooks = function() {
-  let bookList = fs.readFileSync("./src/bookList.json", "utf8");
-  bookList = JSON.parse(bookList);
+const getAllBooks = function(allBooksDetail) {
+  let bookList = Object.values(allBooksDetail.allBooksList);
   return bookList;
 };
 
-const isAuthorBookAvailable = function(author) {
-  let bookList = getAllBooks();
-  return bookList.hasOwnProperty(author);
+const isAuthorPresent = function(author) {
+  return function(bookDetail) {
+    return bookDetail.authorName == author;
+  };
 };
 
-const giveBooksOfAuthor = function(author) {
-  let bookList = getAllBooks();
-  return bookList[author];
-};
-
-const parseBookListByAuthor = function(authorList) {
-  let author = authorList[0];
-  let bookListOfAuthor = [];
-  if (isAuthorBookAvailable(author)) {
-    bookListOfAuthor = giveBooksOfAuthor(author);
-    return bookListOfAuthor;
-  }
-  let errorMessage = "author is not listed.";
-  bookListOfAuthor.push(errorMessage);
+const getBookListOfAuthor = function(allBooksDetail, args) {
+  let author = args.author;
+  let bookList = allBooksDetail.allBooksList;
+  let bookListOfAuthor = Object.values(bookList).filter(
+    isAuthorPresent(author)
+  );
   return bookListOfAuthor;
 };
 
-exports.parseBookListByAuthor = parseBookListByAuthor;
 exports.getAllBooks = getAllBooks;
-exports.isAuthorBookAvailable = isAuthorBookAvailable;
-exports.giveBooksOfAuthor = giveBooksOfAuthor;
+exports.isAuthorPresent = isAuthorPresent;
+exports.getBookListOfAuthor = getBookListOfAuthor;
+exports.parseSearchBook = parseSearchBook;
