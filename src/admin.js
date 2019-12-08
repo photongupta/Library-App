@@ -1,15 +1,16 @@
 const SimpleCrypto = require("simple-crypto-js").default;
 
-const setAdminPassward = function(args, extra, fileOperationTools) {
-  let myPassward = args.passward.toString();
+const setAdminPassword = function(args, extra, fileOperationTools) {
+  let myPassword = args.password.toString();
   let secretKey = "rashmi123";
   let crypto = new SimpleCrypto(secretKey);
-  let chiperText = crypto.encrypt(myPassward);
+  let cipherText = crypto.encrypt(myPassword);
   fileOperationTools.fileOperations.writer(
     fileOperationTools.pathsAndEncoding.pathOfPassward,
-    chiperText,
+    cipherText,
     fileOperationTools.pathsAndEncoding.encoding
   );
+  return "password updated successfully";
 };
 
-exports.setAdminPassward = setAdminPassward;
+exports.setAdminPassword = setAdminPassword;

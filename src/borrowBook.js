@@ -33,12 +33,7 @@ const isBookAvailable = function(bookName, booksDetial) {
   return booksDetial[bookName].availableBooks > 0;
 };
 
-const borrowGivenBook = function(
-  args,
-  allBooksDetail,
-  fileOperationTools,
-  date
-) {
+const borrowGivenBook = function(args, allBooksDetail, fileOperationTools) {
   if (isBookAvailable(args.book, allBooksDetail.booksDetail)) {
     let issuedBookRecord = utils.readFile(
       fileOperationTools,

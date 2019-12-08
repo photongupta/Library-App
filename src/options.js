@@ -10,7 +10,7 @@ const parseOptionArgs = function(optionsAndArgs) {
     "--search": bookStoreLib.parseSearchBook,
     "--borrow": borrowBookLib.borrowGivenBook,
     "--submit": submitBookLib.submitGivenBook,
-    "--admin": adminLib.setAdminPassward,
+    "--admin": adminLib.setAdminPassword,
     "--add": addBookLib.addBookToTheLibrary
   };
   let args = parseUserOptions(optionsAndArgs.slice(3));

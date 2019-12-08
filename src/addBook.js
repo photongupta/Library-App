@@ -1,14 +1,15 @@
+const readline = require("readline");
 const SimpleCrypto = require("simple-crypto-js").default;
 const utils = require("./utilities");
 
-const isPasswordCorrect = function(args, fileOperationTools) {
+const isPasswordCorrect = function(userPassword, fileOperationTools) {
   let crypto = new SimpleCrypto("rashmi123");
-  let chiperText = utils.read(
+  let cipherText = utils.read(
     fileOperationTools,
     fileOperationTools.pathsAndEncoding.pathOfPassward
   );
-  let dechiperText = crypto.decrypt(chiperText);
-  return args.passward == dechiperText;
+  let decipherText = crypto.decrypt(cipherText);
+  return userPassword == decipherText;
 };
 
 const getBookId = function(bookList) {
@@ -31,13 +32,36 @@ const getTotalCountOfSameBooks = function(args, allBookList) {
   return count;
 };
 
-const addBookToTheLibrary = function(args, allBooksDetail, fileOperationTools) {
-  if (isPasswordCorrect(args, fileOperationTools)) {
+const addBookToTheLibrary = async function(
+  args,
+  allBooksDetail,
+  fileOperationTools
+) {
+  console.log("please enter the password : ");
+  const userPassword = await hiddenQuestion();
+  if (isPasswordCorrect(userPassword, fileOperationTools)) {
     let bookStatus = addBook(args, allBooksDetail, fileOperationTools);
     return bookStatus;
   }
   return errorMessage();
 };
+
+const hiddenQuestion = () =>
+  new Promise((resolve, reject) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+    process.stdin.on("data", () => {
+      readline.cursorTo(process.stdout, 0);
+      process.stdout.write("*".repeat(rl.line.length));
+    });
+    rl.on("line", value => {
+      resolve(value);
+      reject("not done");
+      rl.pause();
+    });
+  });
 
 const addBook = function(args, allBooksDetail, fileOperationTools) {
   let bookDetail = {
