@@ -1,6 +1,8 @@
 const readline = require("readline");
 const SimpleCrypto = require("simple-crypto-js").default;
 const utils = require("./utilities");
+const { Say } = require("say");
+const say = new Say();
 
 const isPasswordCorrect = function(userPassword, fileOperationTools) {
   let crypto = new SimpleCrypto("rashmi123");
@@ -37,6 +39,7 @@ const addBookToTheLibrary = async function(
   allBooksDetail,
   fileOperationTools
 ) {
+  say.speak("please enter the password ", "Samantha");
   console.log("please enter the password : ");
   const userPassword = await hiddenQuestion();
   if (isPasswordCorrect(userPassword, fileOperationTools)) {
@@ -92,11 +95,15 @@ const addBook = function(args, allBooksDetail, fileOperationTools) {
     allBooksDetail.allBooksList,
     fileOperationTools.pathsAndEncoding.pathOfBookList
   );
+  say.speak("book is Added successFuly");
   return "book is Added successFuly";
 };
 
 const errorMessage = function() {
-  return "oooppss......!!!!!!   \npassWard is wrong ....\nplease enter correct passward in order to add the book in library.";
+  const message =
+    "ooohhhh......!!!!!!   \nentered passWard is wrong ....\nplease enter correct passward in order to add the book in library.";
+  say.speak(message);
+  return message;
 };
 
 exports.addBookToTheLibrary = addBookToTheLibrary;

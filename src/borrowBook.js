@@ -1,4 +1,6 @@
 const utils = require("./utilities");
+const { Say } = require("say");
+const say = new Say();
 
 const getAllSimilarBooks = function(args, bookList) {
   let sameBooks = {};
@@ -34,6 +36,7 @@ const isBookAvailable = function(bookName, booksDetial) {
 };
 
 const borrowGivenBook = function(args, allBooksDetail, fileOperationTools) {
+  let message = "book is not available now......";
   if (isBookAvailable(args.book, allBooksDetail.booksDetail)) {
     let issuedBookRecord = utils.readFile(
       fileOperationTools,
@@ -65,8 +68,9 @@ const borrowGivenBook = function(args, allBooksDetail, fileOperationTools) {
       allBooksDetail.booksDetail,
       fileOperationTools.pathsAndEncoding.pathOfBooksDetail
     );
-    return "book is added in issued list";
+    message = "book is added in issued list";
   }
-  return "book is not available now......";
+  say.speak(message);
+  return message;
 };
 exports.borrowGivenBook = borrowGivenBook;

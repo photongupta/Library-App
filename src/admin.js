@@ -1,4 +1,12 @@
 const SimpleCrypto = require("simple-crypto-js").default;
+const { Say } = require("say");
+const say = new Say();
+
+const getMessage = function() {
+  let message = "password updated successfully";
+  say.speak(message);
+  return message;
+};
 
 const setAdminPassword = function(args, extra, fileOperationTools) {
   let myPassword = args.password.toString();
@@ -10,7 +18,7 @@ const setAdminPassword = function(args, extra, fileOperationTools) {
     cipherText,
     fileOperationTools.pathsAndEncoding.encoding
   );
-  return "password updated successfully";
+  return getMessage();
 };
 
 exports.setAdminPassword = setAdminPassword;
